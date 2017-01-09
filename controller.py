@@ -13,11 +13,11 @@ import component
 backend_image_path = "./pictures/backend/%s.tif"
 icon_image_path = "./pictures/icon/%s.tif"
 
-base_image_name = "40×30"
+base_image_name = "40×30横（加长49×30）"
 main_title = "水火箭的STEM初探"
 sub_title = "SCIENCE DREAM"
 code_title = "LZ-CM-08-0001"
-icon_name = ['图标40×30_0001_防潮', '图标40×30_0002_小心划伤']
+icon_name = ['图标40×30_0001_防潮', '图标40×30_0002_小心划伤', '图标40×30_0003_破碎', '图标40×30_0004_尖锐物体']
 out_path = "./pictures/result.jpg"
 
 
@@ -41,13 +41,15 @@ def assemble_logo(config_file_name):
         elif key == 'code128':
             code128_img = component.transfer_to_code128(code_title, int(value['size.y']))
             code128_img = component.resize_image(code128_img, value['size.x'], value['size.y'])
-            if value['vertical'] == 1:
-                code128_img = component.rotate_image(code128_img, 90)
+            if value['vertical'] == '1':
+                code128_img = component.transpose_image(code128_img)
             result_image = component.assemble_image(result_image, code128_img,
                                                     value['coordinate.x'], value['coordinate.y'])
         elif key == 'footer':
             footer_image = component.transfer_font_to_img(code_title, value['font.size'],
                                                           value['size.x'], value['size.y'], 1)
+            if value['vertical'] == '1':
+                footer_image = component.transpose_image(footer_image)
             result_image = component.assemble_image(result_image, footer_image,
                                                     value['coordinate.x'], value['coordinate.y'])
         elif key.startswith('icon', 0, 4):
@@ -76,4 +78,4 @@ def get_config(config_file_name):
     finally:
         return config_dict
 
-assemble_logo('40x30i2')
+assemble_logo('40x30i4v')

@@ -8,9 +8,8 @@ from PIL import Image
 
 
 # rotate a image according the angle
-def rotate_image(current_image, angle):
-    angle = int(angle)
-    tmp_image = current_image.rotate(angle, Image.ANTIALIAS)
+def transpose_image(current_image):
+    tmp_image = current_image.transpose(Image.ROTATE_90)
     return tmp_image
 
 

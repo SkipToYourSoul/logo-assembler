@@ -9,3 +9,8 @@ https://github.com/python-pillow/Pillow
 https://pypi.python.org/pypi/code128/0.3
 
 * pip install -i https://testpypi.python.org/pypi code128 --pre
+
+pmw:
+https://pypi.python.org/pypi/Pmw/2.0.0
+
+pip install pmw
