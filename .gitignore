@@ -5,7 +5,7 @@ out
 target
 
 # test jpgs
-jpgs
+pictures
 
 # Mac temp files
 .DS_Store
