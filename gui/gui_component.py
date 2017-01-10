@@ -12,6 +12,7 @@ import Pmw
 
 
 class MainContainer(object):
+    dir_name = ""
     backend_size = ('40×30',
                     '40×30（加长50×30）',
                     '40×30横',
@@ -23,13 +24,11 @@ class MainContainer(object):
                     '80×60',
                     '80×60（加长100×60）')
     icon_count = ('1', '2', '3', '4', '5', '6')
-
-    def guide(self):
-        self.console_text.insert(END, 'Please check the README.md\n'
-                                      'More information will show in https://github.com/SkipToYourSoul/format-transfer')
-
-    def clear(self):
-        self.console_text.delete('1.0', '999999.0')
+    icon_setting = [
+        ('0001_防潮', 0, 0),
+        ('0002_小心划伤', 0, 1)
+    ]
+    icon_states = []
 
     def help(self):
         tkinter.messagebox.showinfo(self.root, ' Author: liye \n Version: 1.0 \n Help email: liye.forwork@foxmail.com')
@@ -41,9 +40,6 @@ class MainContainer(object):
 
         # file menu
         file_menu = Menu(self.menu_bar, tearoff=0)
-        file_menu.add_command(label="Guide", command=self.guide)
-        file_menu.add_command(label="Clear", command=self.clear)
-        file_menu.add_separator()
         file_menu.add_command(label="Exit", command=file_menu.quit)
         self.menu_bar.add_cascade(label="File", menu=file_menu)
 
@@ -56,8 +52,10 @@ class MainContainer(object):
         # top frame: english_name, chinese_name, code
         top_frame = Frame(master, height=80)
         top_frame.pack(side=TOP, padx=20, pady=10)
+
+        self.english_name = StringVar()
         self.english_label = Label(top_frame, text=u'英文名称')
-        self.english_entry = Entry(top_frame, width=50)
+        self.english_entry = Entry(top_frame, width=50, textvariable=self.english_name)
 
         self.chinese_label = Label(top_frame, text=u'中文名称')
         self.chinese_entry = Entry(top_frame, width=50)
@@ -66,12 +64,13 @@ class MainContainer(object):
         self.code_entry = Entry(top_frame, width=50)
 
         self.size_label = Label(top_frame, text=u'贴纸尺寸')
-        self.size_comboBox = Pmw.ComboBox(top_frame, selectioncommand=self.change_size,
-                                          scrolledlist_items=self.backend_size)
-        self.size_comboBox.selectitem(self.backend_size[0])
+        self.size_comboBox = Pmw.ComboBox(top_frame, selectioncommand=self.change_backend_size,
+                                          scrolledlist_items=self.backend_size, entry_width=39)
+        self.current_backend_size = self.backend_size[0]
+        self.size_comboBox.selectitem(self.current_backend_size)
 
         self.count_label = Label(top_frame, text=u'图标数量')
-        self.count_comboBox = Pmw.ComboBox(top_frame, scrolledlist_items=self.icon_count)
+        self.count_comboBox = Pmw.ComboBox(top_frame, scrolledlist_items=self.icon_count, entry_width=39)
         self.count_comboBox.selectitem(self.icon_count[0])
 
         self.english_label.grid(row=0, column=0, sticky=W)
@@ -85,6 +84,48 @@ class MainContainer(object):
         self.count_label.grid(row=4, column=0, sticky=W)
         self.count_comboBox.grid(row=4, column=1, padx=10, pady=5, sticky=W)
 
+        # icon style frame: icon checkBox
+        icon_style_frame = LabelFrame(master, text=u'注意事项图标选择', padx=5)
+        icon_style_frame.pack(side=TOP, fill=BOTH, padx=20)
+
+        for text, row, column in self.icon_setting:
+            var = IntVar()
+            Checkbutton(icon_style_frame, width=20, text=text, state='normal',
+                        variable=var, onvalue=1, offvalue=0, anchor=W).grid(row=row, column=column, sticky=W)
+            self.icon_states.append((text, var))
+
+        # icon size frame: icon size
+        self.icon_var = IntVar()
+        icon_size_frame = LabelFrame(master, text=u'图标大小选择', padx=5)
+        icon_size_frame.pack(side=TOP, fill=BOTH, padx=20, pady=10)
+        Radiobutton(icon_size_frame, text=u"添加小图标", variable=self.icon_var, value=1).grid(row=0, column=0, sticky=W)
+        Radiobutton(icon_size_frame, text=u"添加中图标", variable=self.icon_var, value=2).grid(row=0, column=1, sticky=W)
+        Radiobutton(icon_size_frame, text=u"添加大图标", variable=self.icon_var, value=3).grid(row=0, column=2, sticky=W)
+        self.icon_var.set(1)
+
+        # bottom frame: path filedialog,
+        bottom_frame = Frame(master)
+        bottom_frame.pack(side=TOP, fill=BOTH, padx=20)
+        self.entry_var = StringVar()
+        self.dir_entry = Entry(bottom_frame, textvariable=self.entry_var, width=38)
+        self.dir_button = Button(bottom_frame, command=self.open_dir, text=u'选择导出路径')
+        self.dir_entry.grid(row=0, column=0, sticky=W)
+        self.dir_button.grid(row=0, column=1, padx=5, sticky=E)
+
+        # confirm fame: confirm bottom
+        confirm_frame = Frame(master)
+        confirm_frame.pack(side=TOP, fill=BOTH, padx=20, pady=10)
+        self.confirm_button = Button(confirm_frame, width=50, command=self.confirm, text=u'确认')
+        self.confirm_button.grid(row=0, column=0, sticky=W)
+
+    def confirm(self):
+        for text, var in self.icon_states:
+            print(text)
+            print(var.get())
+        print(self.icon_var.get())
+        print(self.english_name.get())
+        print(self.current_backend_size)
+
     def open_dir(self):
         self.dir_name = tkinter.filedialog.askdirectory()
         self.entry_var.set(self.dir_name)
@@ -92,22 +133,13 @@ class MainContainer(object):
             self.message_info("No directory was choose!")
             self.dir_name = ""
             return
-        self.console_text.insert(END, '> You choose:\n' + self.dir_name + '\n> Files are as follows:' + '\n')
-        for each_dir in os.listdir(self.entry_var.get()):
-            self.console_text.insert(END, '> ' + each_dir + '\n')
-        self.console_text.insert(END, '\n')
-        self.console_text.update()
-
-    def transfer_files(self):
-        if self.dir_name == "":
-            self.message_info("You must choose your file directory first!")
-            return
 
     def message_info(self, message):
-        tkinter.messagebox.showinfo(self.content_frame, message=message)
+        tkinter.messagebox.showinfo(self.root, message)
 
-    def change_size(self, size):
-        print(size)
+    def change_backend_size(self, size):
+        self.current_backend_size = size
+
 
 def center_window(root, width, height):
     screenwidth = root.winfo_screenwidth()

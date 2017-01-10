@@ -14,3 +14,10 @@ pmw:
 https://pypi.python.org/pypi/Pmw/2.0.0
 
 pip install pmw
+
+
+
+
+tkinter 控件详细介绍
+http://blog.csdn.net/shu39721/article/details/46348077
+http://www.yiibai.com/python/python_gui_programming.html#python_gui_programming
