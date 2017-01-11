@@ -4,30 +4,18 @@ Author: liye@qiyi.com
 Creation Date: 2017/1/10
 Description: gui component with tkinter
 """
-
-from tkinter import *
-import tkinter.messagebox
-import tkinter.filedialog
-import Pmw
+from gui.__init__ import *
+import gui.gui_config as config
+import gui.gui_controller as controller
 
 
 class MainContainer(object):
     dir_name = ""
-    backend_size = ('40×30',
-                    '40×30（加长50×30）',
-                    '40×30横',
-                    '40×30横（加长49×30）',
-                    '40×30横（加长58×30）',
-                    '40×30横（加长67×30）',
-                    '60×40',
-                    '60×40（加长75×40）',
-                    '80×60',
-                    '80×60（加长100×60）')
-    icon_count = ('1', '2', '3', '4', '5', '6')
-    icon_setting = [
-        ('0001_防潮', 0, 0),
-        ('0002_小心划伤', 0, 1)
-    ]
+    icon_suffix = "tif"
+    conf_suffix = "conf"
+    backend_setting = config.get_backend_config()
+    icon_count_setting = config.get_icon_count_config()
+    icon_setting = config.get_icon_config()
     icon_states = []
 
     def help(self):
@@ -57,21 +45,25 @@ class MainContainer(object):
         self.english_label = Label(top_frame, text=u'英文名称')
         self.english_entry = Entry(top_frame, width=50, textvariable=self.english_name)
 
+        self.chinese_name = StringVar()
         self.chinese_label = Label(top_frame, text=u'中文名称')
-        self.chinese_entry = Entry(top_frame, width=50)
+        self.chinese_entry = Entry(top_frame, width=50, textvariable=self.chinese_name)
 
+        self.code_number = StringVar()
         self.code_label = Label(top_frame, text=u'产品编号')
-        self.code_entry = Entry(top_frame, width=50)
+        self.code_entry = Entry(top_frame, width=50, textvariable=self.code_number)
 
         self.size_label = Label(top_frame, text=u'贴纸尺寸')
         self.size_comboBox = Pmw.ComboBox(top_frame, selectioncommand=self.change_backend_size,
-                                          scrolledlist_items=self.backend_size, entry_width=39)
-        self.current_backend_size = self.backend_size[0]
+                                          scrolledlist_items=self.backend_setting, entry_width=39)
+        self.current_backend_size = self.backend_setting[0]
         self.size_comboBox.selectitem(self.current_backend_size)
 
         self.count_label = Label(top_frame, text=u'图标数量')
-        self.count_comboBox = Pmw.ComboBox(top_frame, scrolledlist_items=self.icon_count, entry_width=39)
-        self.count_comboBox.selectitem(self.icon_count[0])
+        self.count_comboBox = Pmw.ComboBox(top_frame, selectioncommand=self.change_icon_count,
+                                           scrolledlist_items=self.icon_count_setting, entry_width=39)
+        self.current_icon_count = self.icon_count_setting[0]
+        self.count_comboBox.selectitem(self.current_icon_count)
 
         self.english_label.grid(row=0, column=0, sticky=W)
         self.english_entry.grid(row=0, column=1, padx=10, pady=5, sticky=W)
@@ -95,19 +87,19 @@ class MainContainer(object):
             self.icon_states.append((text, var))
 
         # icon size frame: icon size
-        self.icon_var = IntVar()
+        self.icon_size = StringVar()
         icon_size_frame = LabelFrame(master, text=u'图标大小选择', padx=5)
         icon_size_frame.pack(side=TOP, fill=BOTH, padx=20, pady=10)
-        Radiobutton(icon_size_frame, text=u"添加小图标", variable=self.icon_var, value=1).grid(row=0, column=0, sticky=W)
-        Radiobutton(icon_size_frame, text=u"添加中图标", variable=self.icon_var, value=2).grid(row=0, column=1, sticky=W)
-        Radiobutton(icon_size_frame, text=u"添加大图标", variable=self.icon_var, value=3).grid(row=0, column=2, sticky=W)
-        self.icon_var.set(1)
+        Radiobutton(icon_size_frame, text=u"添加小图标", variable=self.icon_size, value='40×30').grid(row=0, column=0, sticky=W)
+        Radiobutton(icon_size_frame, text=u"添加中图标", variable=self.icon_size, value='60×40').grid(row=0, column=1, sticky=W)
+        Radiobutton(icon_size_frame, text=u"添加大图标", variable=self.icon_size, value='80×60').grid(row=0, column=2, sticky=W)
+        self.icon_size.set('40×30')
 
-        # bottom frame: path filedialog,
+        # bottom frame: path filedialog
         bottom_frame = Frame(master)
         bottom_frame.pack(side=TOP, fill=BOTH, padx=20)
-        self.entry_var = StringVar()
-        self.dir_entry = Entry(bottom_frame, textvariable=self.entry_var, width=38)
+        self.output_path = StringVar()
+        self.dir_entry = Entry(bottom_frame, textvariable=self.output_path, width=38)
         self.dir_button = Button(bottom_frame, command=self.open_dir, text=u'选择导出路径')
         self.dir_entry.grid(row=0, column=0, sticky=W)
         self.dir_button.grid(row=0, column=1, padx=5, sticky=E)
@@ -119,16 +111,63 @@ class MainContainer(object):
         self.confirm_button.grid(row=0, column=0, sticky=W)
 
     def confirm(self):
+        # step1: english_name, chinese_name, code_number is not empty
+        if self.english_name.get().strip() == "":
+            self.message_info("英文名不能为空")
+            return
+        if self.chinese_name.get().strip() == "":
+            self.message_info("中文名不能为空")
+            return
+        if self.code_number.get().strip() == "":
+            self.message_info("产品编号不能为空")
+            return
+
+        # step2: selected icons must be equal icon size
+        selected_icon_count = 0
+        icon_name_list = []
         for text, var in self.icon_states:
-            print(text)
-            print(var.get())
-        print(self.icon_var.get())
-        print(self.english_name.get())
-        print(self.current_backend_size)
+            if var.get() == 1:
+                selected_icon_count += 1
+                icon_name = "图标%s_%s.%s" % (self.icon_size.get(), text, self.icon_suffix)
+                icon_name_list.append(icon_name)
+        if selected_icon_count != int(self.current_icon_count):
+            self.message_info("图标数量不匹配")
+            return
+
+        # step3: backend size must be equal icon size
+        if not self.current_backend_size.startswith(self.icon_size.get()):
+            self.message_info("背景图与图标大小不匹配")
+            return
+
+        # step4: output path is not empty
+        if self.output_path.get().strip() == "":
+            self.message_info("输出路径不能为空")
+            return
+
+        # get logo config
+        conf_file_name = "%s-%s.%s" % (self.current_backend_size, self.current_icon_count, self.conf_suffix)
+        config_dict = config.get_logo_config(conf_file_name)
+        if not config_dict:
+            self.message_info("配置文件'%s'不存在" % conf_file_name)
+            return
+
+        # construct output file name
+        output_file_name = "%s/%s-%s.jpg" % (self.output_path.get(), self.current_backend_size, self.code_number.get())
+
+        # parameters:
+        # english_name, chinese_name, code_number, current_backend_size, current_icon_count, icon_name_list, output_path
+        try:
+            controller.assemble_logo(self.english_name.get(), self.chinese_name.get(), self.code_number.get(),
+                                     self.current_backend_size, config_dict, icon_name_list, output_file_name)
+        except Exception as e:
+            traceback.print_exc()
+            self.message_info("生成失败：%s", e)
+            return
+        self.message_info("生成成功，输出目录：\n%s" % output_file_name)
 
     def open_dir(self):
         self.dir_name = tkinter.filedialog.askdirectory()
-        self.entry_var.set(self.dir_name)
+        self.output_path.set(self.dir_name)
         if not self.dir_name:
             self.message_info("No directory was choose!")
             self.dir_name = ""
@@ -140,17 +179,5 @@ class MainContainer(object):
     def change_backend_size(self, size):
         self.current_backend_size = size
 
-
-def center_window(root, width, height):
-    screenwidth = root.winfo_screenwidth()
-    screenheight = root.winfo_screenheight()
-    size = '%dx%d+%d+%d' % (width, height, (screenwidth - width)/2, (screenheight - height)/2)
-    root.geometry(size)
-
-if __name__ == '__main__':
-    root = Tk()
-    root.title('Logo-assembler')
-    root.resizable(0, 0)
-    center_window(root, 400, 800)
-    container = MainContainer(root)
-    root.mainloop()
+    def change_icon_count(self, count):
+        self.current_icon_count = count
