@@ -18,7 +18,7 @@ def center_window(root, width, height):
 if __name__ == "__main__":
     root = Tk()
     root.title('Logo-assembler')
-    root.resizable(0, 800)
-    center_window(root, 400, 620)
+    root.resizable(0, 0)
+    center_window(root, 400, 500)
     gui.MainContainer(root)
     root.mainloop()
