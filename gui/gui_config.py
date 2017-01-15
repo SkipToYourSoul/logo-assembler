@@ -19,7 +19,7 @@ def get_icon_config():
             icon = line.strip()
             icon_setting.append((icon, row, column))
             column += 1
-            if column % 2 == 0:
+            if column % 3 == 0:
                 row += 1
                 column = 0
     return icon_setting

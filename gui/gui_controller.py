@@ -35,7 +35,7 @@ def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dic
                                                     value['coordinate.x'], value['coordinate.y'])
         elif key == 'footer':
             footer_image = component.transfer_font_to_img(code_title, value['font.size'],
-                                                          value['size.x'], value['size.y'], 1)
+                                                          value['size.x'], value['size.y'], 3)
             if value['vertical'] == '1':
                 footer_image = component.transpose_image(footer_image)
             result_image = component.assemble_image(result_image, footer_image,

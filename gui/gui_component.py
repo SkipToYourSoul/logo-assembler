@@ -13,17 +13,32 @@ class MainContainer(object):
     dir_name = ""
     icon_suffix = "tif"
     conf_suffix = "conf"
-    backend_setting = config.get_backend_config()
-    icon_count_setting = config.get_icon_count_config()
-    icon_setting = config.get_icon_config()
+    backend_setting = None
+    icon_count_setting = None
+    icon_setting = None
     icon_states = []
+
+    root_height = 280
+    root_width = 600
 
     def help(self):
         tkinter.messagebox.showinfo(self.root, ' Author: liye \n Version: 1.0 \n Help email: liye.forwork@foxmail.com')
 
     def __init__(self, master=None):
-        # menu
         self.root = master
+
+        # initial the config and root height
+        try:
+            self.backend_setting = config.get_backend_config()
+            self.icon_count_setting = config.get_icon_count_config()
+            self.icon_setting = config.get_icon_config()
+            self.root_height = (int((len(self.icon_setting)-1) / 3) + 1) * 28 + 250  # 28px a line, base height is 250px
+        except Exception as e:
+            self.message_info("读取配置文件错误，请检查配置文件路径是否正确并重新运行！\n 错误原因：%s" % e)
+            traceback.print_exc()
+            sys.exit(1)
+
+        # menu
         self.menu_bar = Menu(master)
 
         # file menu
@@ -38,86 +53,68 @@ class MainContainer(object):
         master.config(menu=self.menu_bar)
 
         # top frame: english_name, chinese_name, code
-        top_frame = Frame(master, height=80)
-        top_frame.pack(side=TOP, padx=20, pady=10)
+        top_frame = Frame(master)
+        top_frame.pack(side=TOP, fill=BOTH, padx=20, pady=10)
 
         self.english_name = StringVar()
         self.english_label = Label(top_frame, text=u'英文名称')
-        self.english_entry = Entry(top_frame, width=50, textvariable=self.english_name)
+        self.english_entry = Entry(top_frame, bd=2, textvariable=self.english_name)
 
         self.chinese_name = StringVar()
         self.chinese_label = Label(top_frame, text=u'中文名称')
-        self.chinese_entry = Entry(top_frame, width=50, textvariable=self.chinese_name)
+        self.chinese_entry = Entry(top_frame, bd=2, textvariable=self.chinese_name)
 
         self.code_number = StringVar()
         self.code_label = Label(top_frame, text=u'产品编号')
-        self.code_entry = Entry(top_frame, width=50, textvariable=self.code_number)
+        self.code_entry = Entry(top_frame, bd=2, textvariable=self.code_number)
 
         self.size_label = Label(top_frame, text=u'贴纸尺寸')
         self.size_comboBox = Pmw.ComboBox(top_frame, selectioncommand=self.change_backend_size,
-                                          scrolledlist_items=self.backend_setting, entry_width=39)
+                                          scrolledlist_items=self.backend_setting, entry_width=25)
         self.current_backend_style = self.backend_setting[0]
         self.size_comboBox.selectitem(self.current_backend_style)
 
         self.count_label = Label(top_frame, text=u'图标数量')
         self.count_comboBox = Pmw.ComboBox(top_frame, selectioncommand=self.change_icon_count,
-                                           scrolledlist_items=self.icon_count_setting, entry_width=39)
+                                           scrolledlist_items=self.icon_count_setting, entry_width=25)
         self.current_icon_count = self.icon_count_setting[0]
         self.count_comboBox.selectitem(self.current_icon_count)
 
         self.english_label.grid(row=0, column=0, sticky=W)
-        self.english_entry.grid(row=0, column=1, padx=10, pady=5, sticky=W)
+        self.english_entry.grid(row=0, column=1, columnspan=3, sticky=W+E+N+S, padx=10, pady=5)
         self.chinese_label.grid(row=1, column=0, sticky=W)
-        self.chinese_entry.grid(row=1, column=1, padx=10, pady=5, sticky=W)
+        self.chinese_entry.grid(row=1, column=1, columnspan=3, sticky=W+E+N+S, padx=10, pady=5)
         self.code_label.grid(row=2, column=0, sticky=W)
-        self.code_entry.grid(row=2, column=1, padx=10, pady=5, sticky=W)
+        self.code_entry.grid(row=2, column=1, columnspan=3, sticky=W+E+N+S, padx=10, pady=5)
         self.size_label.grid(row=3, column=0, sticky=W)
-        self.size_comboBox.grid(row=3, column=1, padx=10, pady=5, sticky=W)
-        self.count_label.grid(row=4, column=0, sticky=W)
-        self.count_comboBox.grid(row=4, column=1, padx=10, pady=5, sticky=W)
+        self.size_comboBox.grid(row=3, column=1, padx=10, pady=5, sticky=W+E+N+S)
+        self.count_label.grid(row=3, column=2, sticky=W)
+        self.count_comboBox.grid(row=3, column=3, padx=10, pady=5, sticky=W+E+N+S)
 
         # icon style frame: icon checkBox
-        icon_style_frame = LabelFrame(master, text=u'注意事项图标选择', padx=5)
+        icon_style_frame = LabelFrame(master, text=u'注意事项图标选择', padx=5, height=50)
         icon_style_frame.pack(side=TOP, fill=BOTH, padx=20)
-
-        self.scrollbar = Scrollbar(icon_style_frame)
-        canvas = Canvas(icon_style_frame, yscrollcommand=self.scrollbar.set, height=20)
-        self.scrollbar.config(command=canvas.yview)
-        self.scrollbar.pack(side=RIGHT, fill=Y)
-        canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
         for text, row, column in self.icon_setting:
             var = IntVar()
-            Checkbutton(canvas, width=20, text=text, state='normal',
+            Checkbutton(icon_style_frame, width=20, text=text, state='normal',
                         variable=var, onvalue=1, offvalue=0, anchor=W).grid(row=row, column=column, sticky=W)
             self.icon_states.append((text, var))
-
-        # scroll bar test
-        # scroll_frame = Frame(master)
-        # scroll_frame.pack(side=TOP, fill=BOTH, padx=20, pady=5)
-        #
-        # self.scrollbar = Scrollbar(scroll_frame)
-        # self.canvas = Canvas(scroll_frame, yscrollcommand=self.scrollbar.set)
-        #
-        # self.scrollbar.config(command=self.canvas.yview)
-        #
-        # self.scrollbar.pack(side=RIGHT, fill=Y)
-        # self.canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
         # bottom frame: path filedialog
         bottom_frame = Frame(master)
         bottom_frame.pack(side=TOP, fill=BOTH, padx=20, pady=5)
         self.output_path = StringVar()
-        self.dir_entry = Entry(bottom_frame, textvariable=self.output_path, width=38)
+        self.dir_entry = Entry(bottom_frame, textvariable=self.output_path, width=66, bd=2)
         self.dir_button = Button(bottom_frame, command=self.open_dir, text=u'选择导出路径')
         self.dir_entry.grid(row=0, column=0, sticky=W)
-        self.dir_button.grid(row=0, column=1, padx=5, sticky=E)
+        self.dir_button.grid(row=0, column=1, padx=5, sticky=W+E+N+S)
 
         # confirm fame: confirm bottom
         confirm_frame = Frame(master)
-        confirm_frame.pack(side=TOP, fill=BOTH, padx=20, pady=5)
-        self.confirm_button = Button(confirm_frame, width=50, command=self.confirm, text=u'确认')
-        self.confirm_button.grid(row=0, column=0, sticky=W)
+        confirm_frame.pack(side=TOP, fill=BOTH, padx=20)
+        self.confirm_button = Button(confirm_frame, width=78, command=self.confirm, text=u'确认')
+        self.confirm_button.grid(row=0, column=0, sticky=W+E+N+S)
 
     def confirm(self):
         # step1: english_name, chinese_name, code_number is not empty
@@ -159,13 +156,14 @@ class MainContainer(object):
         output_file_name = "%s/%s-%s.jpg" % (self.output_path.get(), self.current_backend_style, self.code_number.get())
 
         # parameters:
-        # english_name, chinese_name, code_number, current_backend_style, current_icon_count, icon_name_list, output_path
+        # english_name, chinese_name, code_number, current_backend_style,
+        # current_icon_count, icon_name_list, output_path
         try:
             controller.assemble_logo(self.english_name.get(), self.chinese_name.get(), self.code_number.get(),
                                      self.current_backend_style, config_dict, icon_name_list, output_file_name)
         except Exception as e:
             traceback.print_exc()
-            self.message_info("生成失败：%s", e)
+            self.message_info("生成失败，失败原因：\n%s" % e)
             return
         self.message_info("生成成功，输出目录：\n%s" % output_file_name)
 
