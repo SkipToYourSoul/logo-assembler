@@ -5,7 +5,7 @@ Creation Date: 2017/1/4
 Description: font to image
 """
 
-from PIL import Image, ImageFont, ImageDraw
+from component.__init__ import *
 
 font_style = {
     1: "./font/msyh.ttf",
@@ -15,7 +15,7 @@ font_style = {
 
 
 # Parameters:
-# is_bold --> 1: msyh, 2: bold msyh
+# is_bold --> 1: msyh, 2: bold msyh, 3: arial
 def transfer_font_to_img(font_text, font_size, back_x, back_y, is_bold):
     font_size = int(font_size)
     back_x = int(back_x)

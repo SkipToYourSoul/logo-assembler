@@ -5,7 +5,7 @@ Creation Date: 2017/1/4
 Description: generate QRcode(code128)
 """
 
-import code128
+from component.__init__ import *
 
 
 def transfer_to_code128(text, height=100):

@@ -45,7 +45,7 @@ def get_icon_count_config():
 
 # get logo config according the file name
 def get_logo_config(config_file_name):
-    config_dict = {}
+    config_dict = OrderedDict()
     try:
         config_file = configparser.ConfigParser()
         config_path = "%s/%s" % (base_config_path, config_file_name)

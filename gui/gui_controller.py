@@ -16,6 +16,7 @@ def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dic
     # assemble result image according the config file
     icon_name_flag = 0
     for key, value in config_dict.items():
+        print(key)
         if key == 'main-title':
             main_title_image = component.transfer_font_to_img(main_title, value['font.size'],
                                                               value['size.x'], value['size.y'], 2)
