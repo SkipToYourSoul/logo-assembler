@@ -31,9 +31,11 @@ def transfer_font_to_img(font_text, font_size, back_x, back_y, is_bold):
     offset_y = 0
 
     # image with white back-ground color, (255, 255, 255) is white
-    back_img = Image.new("RGB", (back_x, back_y), (220, 220, 220))
+    back_img = Image.new("CMYK", (100, 100))
+    back_img = back_img.resize((back_x, back_y), Image.ANTIALIAS)
     draw_brush = ImageDraw.Draw(back_img)
-    draw_brush.text((offset_x, offset_y), font_text, font=font, fill="#231815")
+    #fill=(100, 100, 100, 0)
+    draw_brush.text((offset_x, offset_y), font_text, font=font, fill="#000000")
     del draw_brush
 
     return back_img

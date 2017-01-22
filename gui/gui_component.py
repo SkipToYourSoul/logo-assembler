@@ -13,6 +13,7 @@ class MainContainer(object):
     dir_name = ""
     icon_suffix = "tif"
     conf_suffix = "conf"
+    out_image_suffix = "tif"
     backend_setting = None
     icon_count_setting = None
     icon_setting = None
@@ -32,7 +33,8 @@ class MainContainer(object):
             self.backend_setting = config.get_backend_config()
             self.icon_count_setting = config.get_icon_count_config()
             self.icon_setting = config.get_icon_config()
-            self.root_height = (int((len(self.icon_setting)-1) / 3) + 1) * 28 + 250  # 28px a line, base height is 250px
+            self.root_height = (int(
+                (len(self.icon_setting) - 1) / 3) + 1) * 28 + 250  # 28px a line, base height is 250px
         except Exception as e:
             self.message_info("读取配置文件错误，请检查配置文件路径是否正确并重新运行！\n 错误原因：%s" % e)
             traceback.print_exc()
@@ -81,15 +83,15 @@ class MainContainer(object):
         self.count_comboBox.selectitem(self.current_icon_count)
 
         self.english_label.grid(row=0, column=0, sticky=W)
-        self.english_entry.grid(row=0, column=1, columnspan=3, sticky=W+E+N+S, padx=10, pady=5)
+        self.english_entry.grid(row=0, column=1, columnspan=3, sticky=W + E + N + S, padx=10, pady=5)
         self.chinese_label.grid(row=1, column=0, sticky=W)
-        self.chinese_entry.grid(row=1, column=1, columnspan=3, sticky=W+E+N+S, padx=10, pady=5)
+        self.chinese_entry.grid(row=1, column=1, columnspan=3, sticky=W + E + N + S, padx=10, pady=5)
         self.code_label.grid(row=2, column=0, sticky=W)
-        self.code_entry.grid(row=2, column=1, columnspan=3, sticky=W+E+N+S, padx=10, pady=5)
+        self.code_entry.grid(row=2, column=1, columnspan=3, sticky=W + E + N + S, padx=10, pady=5)
         self.size_label.grid(row=3, column=0, sticky=W)
-        self.size_comboBox.grid(row=3, column=1, padx=10, pady=5, sticky=W+E+N+S)
+        self.size_comboBox.grid(row=3, column=1, padx=10, pady=5, sticky=W + E + N + S)
         self.count_label.grid(row=3, column=2, sticky=W)
-        self.count_comboBox.grid(row=3, column=3, padx=10, pady=5, sticky=W+E+N+S)
+        self.count_comboBox.grid(row=3, column=3, padx=10, pady=5, sticky=W + E + N + S)
 
         # icon style frame: icon checkBox
         icon_style_frame = LabelFrame(master, text=u'注意事项图标选择', padx=5, height=50)
@@ -105,16 +107,17 @@ class MainContainer(object):
         bottom_frame = Frame(master)
         bottom_frame.pack(side=TOP, fill=BOTH, padx=20, pady=5)
         self.output_path = StringVar()
+        self.output_path.set(os.path.join(os.path.expanduser("~"), 'Desktop'))
         self.dir_entry = Entry(bottom_frame, textvariable=self.output_path, width=66, bd=2)
         self.dir_button = Button(bottom_frame, command=self.open_dir, text=u'选择导出路径')
         self.dir_entry.grid(row=0, column=0, sticky=W)
-        self.dir_button.grid(row=0, column=1, padx=5, sticky=W+E+N+S)
+        self.dir_button.grid(row=0, column=1, padx=5, sticky=W + E + N + S)
 
         # confirm fame: confirm bottom
         confirm_frame = Frame(master)
         confirm_frame.pack(side=TOP, fill=BOTH, padx=20)
         self.confirm_button = Button(confirm_frame, width=78, command=self.confirm, text=u'确认')
-        self.confirm_button.grid(row=0, column=0, sticky=W+E+N+S)
+        self.confirm_button.grid(row=0, column=0, sticky=W + E + N + S)
 
     def confirm(self):
         # step1: english_name, chinese_name, code_number is not empty
@@ -153,7 +156,8 @@ class MainContainer(object):
             return
 
         # construct output file name
-        output_file_name = "%s/%s-%s.jpg" % (self.output_path.get(), self.current_backend_style, self.code_number.get())
+        output_file_name = "%s/%s-%s.%s" % (self.output_path.get(), self.current_backend_style, self.code_number.get(),
+                                            self.out_image_suffix)
 
         # parameters:
         # english_name, chinese_name, code_number, current_backend_style,

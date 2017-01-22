@@ -16,7 +16,6 @@ def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dic
     # assemble result image according the config file
     icon_name_flag = 0
     for key, value in config_dict.items():
-        print(key)
         if key == 'main-title':
             main_title_image = component.transfer_font_to_img(main_title, value['font.size'],
                                                               value['size.x'], value['size.y'], 2)
@@ -48,4 +47,8 @@ def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dic
                                                     value['coordinate.x'], value['coordinate.y'])
 
     # save result image
-    result_image.save(output_path, 'jpeg', quality=95)
+    background_image = Image.new('CMYK', (100, 100))
+    result_size = result_image.size
+    background_image = background_image.resize(result_size, Image.ANTIALIAS)
+    background_image = component.assemble_image(background_image, result_image, 0, 0)
+    background_image.save(output_path, format='TIFF', dpi=(300.0, 300.0))

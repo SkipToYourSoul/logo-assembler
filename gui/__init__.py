@@ -5,6 +5,7 @@ import tkinter.messagebox
 import tkinter.filedialog
 import traceback
 import configparser
+import os
 from collections import OrderedDict
 
 import component
