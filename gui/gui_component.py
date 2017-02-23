@@ -106,12 +106,20 @@ class MainContainer(object):
         # bottom frame: path filedialog
         bottom_frame = Frame(master)
         bottom_frame.pack(side=TOP, fill=BOTH, padx=20, pady=5)
+        self.output_name = StringVar()
+        self.output_name.set("example_filename")
+        self.output_label = Label(bottom_frame, text=u'文件名')
+        self.output_entry = Entry(bottom_frame, bd=2, textvariable=self.output_name)
+
         self.output_path = StringVar()
         self.output_path.set(os.path.join(os.path.expanduser("~"), 'Desktop'))
-        self.dir_entry = Entry(bottom_frame, textvariable=self.output_path, width=66, bd=2)
+        self.dir_entry = Entry(bottom_frame, textvariable=self.output_path, width=36, bd=2)
         self.dir_button = Button(bottom_frame, command=self.open_dir, text=u'选择导出路径')
-        self.dir_entry.grid(row=0, column=0, sticky=W)
-        self.dir_button.grid(row=0, column=1, padx=5, sticky=W + E + N + S)
+
+        self.output_label.grid(row=0, column=0, sticky=W)
+        self.output_entry.grid(row=0, column=1, padx=5, pady=5, sticky=W + E + N + S)
+        self.dir_entry.grid(row=0, column=2, sticky=W)
+        self.dir_button.grid(row=0, column=3, padx=5, sticky=W + E + N + S)
 
         # confirm fame: confirm bottom
         confirm_frame = Frame(master)
@@ -156,8 +164,9 @@ class MainContainer(object):
             return
 
         # construct output file name
-        output_file_name = "%s/%s-%s.%s" % (self.output_path.get(), self.current_backend_style, self.code_number.get(),
-                                            self.out_image_suffix)
+        if self.output_name.get() == "":
+            self.output_name.set("example_filename")
+        output_file_name = "%s/%s.%s" % (self.output_path.get(), self.output_name.get(), self.out_image_suffix)
 
         # parameters:
         # english_name, chinese_name, code_number, current_backend_style,
