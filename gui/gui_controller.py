@@ -18,7 +18,7 @@ icon_image_path = "./pictures/icon/%s"
 #   $5 = icon_name_list 图标名称数据（List<String>）
 #   $6 = output_path 输出路径（String）
 # -------------
-def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dict, icon_name_list, output_path):
+def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dict, icon_name_list, output_path, dpi):
     result_image = Image.open(backend_image_path % base_image_name)
 
     # assemble result image according the config file
@@ -59,4 +59,5 @@ def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dic
     result_size = result_image.size
     background_image = background_image.resize(result_size, Image.ANTIALIAS)
     background_image = component.assemble_image(background_image, result_image, 0, 0)
-    background_image.save(output_path, format='TIFF', dpi=(300.0, 300.0))
+    dpi = float("%.1f" % float(dpi))
+    background_image.save(output_path, format='TIFF', dpi=(dpi, dpi))

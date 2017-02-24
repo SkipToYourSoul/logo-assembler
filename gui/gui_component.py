@@ -106,12 +106,20 @@ class MainContainer(object):
         # bottom frame: path filedialog
         bottom_frame = Frame(master)
         bottom_frame.pack(side=TOP, fill=BOTH, padx=20, pady=10)
+
         self.output_name = StringVar()
         self.output_name.set("example_filename")
         self.output_label = Label(bottom_frame, text=u'文件名')
-        self.output_entry = Entry(bottom_frame, bd=2, width=70, textvariable=self.output_name)
+        self.output_entry = Entry(bottom_frame, bd=2, width=30, textvariable=self.output_name)
+        self.dpi_value = StringVar()
+        self.dpi_value.set("300")
+        self.dpi_label = Label(bottom_frame, text=u'图片DPI')
+        self.dpi_entry = Entry(bottom_frame, bd=2, width=29, textvariable=self.dpi_value)
+
         self.output_label.grid(row=0, column=0, padx=5, sticky=W)
         self.output_entry.grid(row=0, column=1, padx=5, sticky=W + E + N + S)
+        self.dpi_label.grid(row=0, column=2, padx=5, sticky=W)
+        self.dpi_entry.grid(row=0, column=3, padx=5, sticky=W + E + N + S)
 
         file_frame = Frame(master)
         file_frame.pack(side=TOP, fill=BOTH, padx=20)
@@ -174,7 +182,8 @@ class MainContainer(object):
         # current_icon_count, icon_name_list, output_path
         try:
             controller.assemble_logo(self.english_name.get(), self.chinese_name.get(), self.code_number.get(),
-                                     self.current_backend_style, config_dict, icon_name_list, output_file_name)
+                                     self.current_backend_style, config_dict, icon_name_list, output_file_name,
+                                     self.dpi_value.get())
         except Exception as e:
             traceback.print_exc()
             self.message_info("生成失败，失败原因：\n%s" % e)
