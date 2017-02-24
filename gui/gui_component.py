@@ -19,7 +19,7 @@ class MainContainer(object):
     icon_setting = None
     icon_states = []
 
-    root_height = 280
+    root_height = 300
     root_width = 600
 
     def help(self):
@@ -34,7 +34,7 @@ class MainContainer(object):
             self.icon_count_setting = config.get_icon_count_config()
             self.icon_setting = config.get_icon_config()
             self.root_height = (int(
-                (len(self.icon_setting) - 1) / 3) + 1) * 28 + 250  # 28px a line, base height is 250px
+                (len(self.icon_setting) - 1) / 3) + 1) * 28 + 280  # 28px a line, base height is 250px
         except Exception as e:
             self.message_info("读取配置文件错误，请检查配置文件路径是否正确并重新运行！\n 错误原因：%s" % e)
             traceback.print_exc()
@@ -105,25 +105,26 @@ class MainContainer(object):
 
         # bottom frame: path filedialog
         bottom_frame = Frame(master)
-        bottom_frame.pack(side=TOP, fill=BOTH, padx=20, pady=5)
+        bottom_frame.pack(side=TOP, fill=BOTH, padx=20, pady=10)
         self.output_name = StringVar()
         self.output_name.set("example_filename")
         self.output_label = Label(bottom_frame, text=u'文件名')
-        self.output_entry = Entry(bottom_frame, bd=2, textvariable=self.output_name)
+        self.output_entry = Entry(bottom_frame, bd=2, width=70, textvariable=self.output_name)
+        self.output_label.grid(row=0, column=0, padx=5, sticky=W)
+        self.output_entry.grid(row=0, column=1, padx=5, sticky=W + E + N + S)
 
+        file_frame = Frame(master)
+        file_frame.pack(side=TOP, fill=BOTH, padx=20)
         self.output_path = StringVar()
         self.output_path.set(os.path.join(os.path.expanduser("~"), 'Desktop'))
-        self.dir_entry = Entry(bottom_frame, textvariable=self.output_path, width=36, bd=2)
-        self.dir_button = Button(bottom_frame, command=self.open_dir, text=u'选择导出路径')
-
-        self.output_label.grid(row=0, column=0, sticky=W)
-        self.output_entry.grid(row=0, column=1, padx=5, pady=5, sticky=W + E + N + S)
-        self.dir_entry.grid(row=0, column=2, sticky=W)
-        self.dir_button.grid(row=0, column=3, padx=5, sticky=W + E + N + S)
+        self.dir_entry = Entry(file_frame, textvariable=self.output_path, width=65, bd=2)
+        self.dir_button = Button(file_frame, command=self.open_dir, text=u'选择导出路径')
+        self.dir_entry.grid(row=1, column=1, sticky=W)
+        self.dir_button.grid(row=1, column=0, padx=5, sticky=W + E + N + S)
 
         # confirm fame: confirm bottom
         confirm_frame = Frame(master)
-        confirm_frame.pack(side=TOP, fill=BOTH, padx=20)
+        confirm_frame.pack(side=TOP, fill=BOTH, padx=20, pady=5)
         self.confirm_button = Button(confirm_frame, width=78, command=self.confirm, text=u'确认')
         self.confirm_button.grid(row=0, column=0, sticky=W + E + N + S)
 

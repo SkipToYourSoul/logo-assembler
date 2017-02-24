@@ -10,6 +10,14 @@ backend_image_path = "./pictures/backend/%s.tif"
 icon_image_path = "./pictures/icon/%s"
 
 
+# -------------
+#   $1 = main_title 英文标题（String）
+#   $2 = sub_title 中文标题（String）
+#   $3 = code_title 二维码编号（String）
+#   $4 = base_image_name 底图名称（String）
+#   $5 = icon_name_list 图标名称数据（List<String>）
+#   $6 = output_path 输出路径（String）
+# -------------
 def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dict, icon_name_list, output_path):
     result_image = Image.open(backend_image_path % base_image_name)
 
