@@ -110,11 +110,11 @@ class MainContainer(object):
         self.output_name = StringVar()
         self.output_name.set("example_filename")
         self.output_label = Label(bottom_frame, text=u'文件名')
-        self.output_entry = Entry(bottom_frame, bd=2, width=30, textvariable=self.output_name)
+        self.output_entry = Entry(bottom_frame, bd=2, width=49, textvariable=self.output_name)
         self.dpi_value = StringVar()
         self.dpi_value.set("300")
         self.dpi_label = Label(bottom_frame, text=u'图片DPI')
-        self.dpi_entry = Entry(bottom_frame, bd=2, width=29, textvariable=self.dpi_value)
+        self.dpi_entry = Entry(bottom_frame, bd=2, width=10, textvariable=self.dpi_value)
 
         self.output_label.grid(row=0, column=0, padx=5, sticky=W)
         self.output_entry.grid(row=0, column=1, padx=5, sticky=W + E + N + S)
