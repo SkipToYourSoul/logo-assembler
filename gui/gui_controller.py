@@ -47,4 +47,4 @@ def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dic
                                                     value['coordinate.x'], value['coordinate.y'])
 
     # save result image
-    result_image.save(output_path, 'jpeg', quality=95)
+    result_image.save(output_path, 'jpeg', quality=95, dpi=(300, 300))
