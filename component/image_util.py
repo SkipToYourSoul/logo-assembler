@@ -4,7 +4,7 @@ Author: liye@qiyi.com
 Creation Date: 2017/1/4
 Description: Some basic utils to handle image
 """
-from PIL import Image
+from component.__init__ import *
 
 
 # rotate a image according the angle

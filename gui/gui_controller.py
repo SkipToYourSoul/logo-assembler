@@ -10,7 +10,15 @@ backend_image_path = "./pictures/backend/%s.tif"
 icon_image_path = "./pictures/icon/%s"
 
 
-def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dict, icon_name_list, output_path):
+# -------------
+#   $1 = main_title 英文标题（String）
+#   $2 = sub_title 中文标题（String）
+#   $3 = code_title 二维码编号（String）
+#   $4 = base_image_name 底图名称（String）
+#   $5 = icon_name_list 图标名称数据（List<String>）
+#   $6 = output_path 输出路径（String）
+# -------------
+def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dict, icon_name_list, output_path, dpi):
     result_image = Image.open(backend_image_path % base_image_name)
 
     # assemble result image according the config file
@@ -47,4 +55,9 @@ def assemble_logo(main_title, sub_title, code_title, base_image_name, config_dic
                                                     value['coordinate.x'], value['coordinate.y'])
 
     # save result image
-    result_image.save(output_path, 'jpeg', quality=95, dpi=(300, 300))
+    background_image = Image.new('CMYK', (100, 100))
+    result_size = result_image.size
+    background_image = background_image.resize(result_size, Image.ANTIALIAS)
+    background_image = component.assemble_image(background_image, result_image, 0, 0)
+    dpi = float("%.1f" % float(dpi))
+    background_image.save(output_path, format='TIFF', dpi=(dpi, dpi))
